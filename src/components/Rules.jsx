@@ -3,7 +3,7 @@
 const Rules = () => {
     return (
         <div>
-            
+            Hello
         </div>
     )
 }
