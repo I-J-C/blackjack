@@ -19,6 +19,7 @@ Play rules:
 Wire Frames
 Components:
 [https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768]
+
 [https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768]
 
 Game Board:

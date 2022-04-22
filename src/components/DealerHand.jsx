@@ -19,12 +19,12 @@ const DealerHand = (props) => {
 
     return(
         <div>
-            {/* <Hand deckID={props.deckID} setDeckID={props.setDeckID} dealer={true} fetchNewDeck={props.fetchNewDeck} /> */}
-            <div className="dealer-title">Dealer</div>
+            <Hand deckID={props.deckID} setDeckID={props.setDeckID} dealer={true} fetchNewDeck={props.fetchNewDeck} />
+            {/* <div className="dealer-title">Dealer</div>
             <button className="dealer-turn" onClick={dealerTurn}>Dealer Turn</button>
             <div className="dealerCard">
                 <img src={cardImage} alt='' />
-            </div>
+            </div> */}
         </div>
     )
 }

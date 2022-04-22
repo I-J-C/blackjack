@@ -55,7 +55,7 @@ const Hand = (props) => {
             // console.log(cardDrawn);
             cardsDrawn.push(newCard);
             // setCurrentCard(newCard);
-            
+            cards.push("<div className=\"card\"><img src=" + response.cards[0].image + " alt=\"\" /></div>");
           })
           .catch((err) => {
             console.error(err);
@@ -67,18 +67,19 @@ const Hand = (props) => {
         if(props.dealer) {
             drawCard();
             for (let i=0; i<cardsDrawn.length; i++) {
-              cards.push(<div className="card">
-                    <img src={cardsDrawn[i].image} alt={''} />
-                  </div>);
+              // cards.push(<div className="card">
+              //       <img src={cardsDrawn[i].image} alt={''} />
+              //     </div>);
             }
         }else if(props.player) {
             for (let i=0; i < props.numCards; i++) {
                 drawCard();
             }
             for (let i=0; i<cardsDrawn.length; i++) {
-              cards.push(<div className="card">
-                    <img src={cardsDrawn[i].image} alt={''} />
-                  </div>);
+              // cards.push(<div className="card">
+              //       <img src={cardsDrawn[i].image} alt={''} />
+              //     </div>);
+              // cards.push(i);
             }
         }
         // for (let i=0; i<cardsDrawn.length; i++) {
@@ -98,8 +99,7 @@ const Hand = (props) => {
         <div className="handCard">
             {props.dealer?"DEALER":"YOU"}
             <div className="hand">
-            {cards}
-            {/* {console.log(cards)} */}
+            {console.log(cards[0])}
             </div>
         </div>
     )
