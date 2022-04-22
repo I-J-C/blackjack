@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Card from "./Card";
+// import Card from "./Card";
 
 const drawURL1 = 'https://deckofcardsapi.com/api/deck/'
 const drawURL2 = '/draw/?count='
@@ -7,9 +7,14 @@ const drawURL2 = '/draw/?count='
 const Hand = (props) => {
     let cards = [];
     let count = 0;
-    let cardsDrawn= [];
+    let cardDrawn;
+    // let cardDrawn = { code: response.cards[0].code,
+    //                   image: response.cards[0].image,
+    //                   value: cardValue(response.cards[0].code)};
+    let cardsDrawn = [];
+    let dealerCardsDrawn = [];
 
-    const [cardsInHand, setCardsInHand] = useState([]);
+    const [currentCard, setCurrentCard] = useState();
 
     const cardValue = (cardCode) => {
       let value = null;
@@ -39,14 +44,17 @@ const Hand = (props) => {
             // format: response.cards is array with all drawn cards
             // response.cards[i].{code, image(pngURL), images([pngURL, svgURL]), suit, value, remaining, success}
             // let newCard = new Card(response.cards[0].code, response.cards[0].image);
-            let cardDrawnArray = cardsDrawn;
+            
             let newCard ={
                 code: response.cards[0].code,
                 image: response.cards[0].image,
+                value: cardValue(response.cards[0].code),
             }
-            console.log(newCard);
+            // console.log(newCard);
+            cardDrawn = newCard;
+            // console.log(cardDrawn);
             cardsDrawn.push(newCard);
-            // cardDrawnArray.push(newCard);
+            // setCurrentCard(newCard);
             
           })
           .catch((err) => {
@@ -56,19 +64,29 @@ const Hand = (props) => {
 
 
     if(props.deckID){
-      let currentCard;
         if(props.dealer) {
             drawCard();
-            currentCard = cardsDrawn[cardsDrawn.length-1];
-            cards.push(<Card card={currentCard} key={cards.length} />);
+            for (let i=0; i<cardsDrawn.length; i++) {
+              cards.push(<div className="card">
+                    <img src={cardsDrawn[i].image} alt={''} />
+                  </div>);
+            }
         }else if(props.player) {
             for (let i=0; i < props.numCards; i++) {
                 drawCard();
-                currentCard = cardsDrawn[i];
-                console.log(currentCard);
-                cards.push(<Card card={currentCard} key={cards.length} />);
+            }
+            for (let i=0; i<cardsDrawn.length; i++) {
+              cards.push(<div className="card">
+                    <img src={cardsDrawn[i].image} alt={''} />
+                  </div>);
             }
         }
+        // for (let i=0; i<cardsDrawn.length; i++) {
+        //   cards.push(<div className="card">
+        //         <img src={cardsDrawn[i].image} alt={''} />
+        //       </div>);
+        // }
+
         console.log(cardsDrawn);
     }
 
@@ -81,7 +99,7 @@ const Hand = (props) => {
             {props.dealer?"DEALER":"YOU"}
             <div className="hand">
             {cards}
-            {/* {console.log(count)} */}
+            {/* {console.log(cards)} */}
             </div>
         </div>
     )

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router';
+import { Link } from 'react-router-dom';
 import './App.css';
 import Gameboard from './components/Gameboard';
 import Rules from './components/Rules';
@@ -199,6 +200,8 @@ const App = () =>{
   return (
     <div className="App">
       <header className="App-header">
+        <Link to={'/'}>NEW GAME</Link>
+        <Link to={'/rules'}>RULES</Link>
       </header>
       <div className='main-content'>
       <Routes>
