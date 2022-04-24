@@ -12,6 +12,8 @@ const drawURL2 = '/draw/?count='
 
 const App = () =>{
 
+  const axios = require('axios');
+
   // constructor(props) {
   //   super(props);
 
@@ -26,8 +28,6 @@ const App = () =>{
   const [deckID, setDeckID] = useState();
   const [deck, setDeck] = useState([]);
 
-  let deckArray = [];
-
   // const [playerHands, setPlayerHands] = useState();
 
 
@@ -41,15 +41,20 @@ const App = () =>{
 
   const fetchNewDeck = () => {
     let url1 = `${deckURL}${deckCount}`;
-    fetch(url1)
-      .then((response) => response.json())
-      .then((response) => {
-        const newDeckID = response.deck_id;
-        setDeckID(newDeckID);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+
+    axios.get(url1)
+    .then(function (response) {
+    console.log(response.data);
+    setDeckID(response.data.deck_id);
+    console.log("deckID", deckID);
+    })
+    .catch(function (error) {
+      // handle error
+    console.log(error);
+    })
+    .then(function () {
+    // always executed
+    });
   }
 
   // const drawCard = () => {
@@ -69,38 +74,65 @@ const App = () =>{
   //     });
   // }
   function getDeck() {
-    let cardArray = [];
+    // let cardArray = [];
     let url2 = `${drawURL1}${deckID}${drawURL2}52`;
-    fetch(url2)
-        .then((response) => response.json())
-        .then((response) => {
-          // debugger;
-          let newCards = response.cards;
-          console.log(newCards);
-          for(let i=0; i<newCards.length; i++) {
-            cardArray.push(newCards[i]);
-          }
 
-          debugger;
-          setDeck(newCards);
-        }).catch((err) => {
-          console.error(err);
-          debugger;
-        });
-        return cardArray;
+    axios.get(url2)
+    .then(function (response) {
+    console.log("cards response", response.data.cards);
+    if (response.data.cards.length === 0) {
+      console.log("deck", deck);
+      return;
+    }
+    setDeck(oldDeck => [...oldDeck, response.data.cards]);
+    // debugger;
+    })
+    .catch(function (error) {
+      // handle error
+    console.log(error);
+    })
+    .then(function () {
+    // always executed
+    });
   }
+
+    // fetch(url2)
+    //     .then((response) => response.json())
+    //     .then((response) => {
+    //       // if (response.error) {
+    //       //   setTimeout(() => {
+    //       //     cardArray = getDeck();
+    //       //   }, 500);
+    //       //   return;
+    //       // }
+    //       let newCards = response.cards;
+    //       console.log('cards response', newCards);
+    //       setDeck(oldDeck => [...oldDeck,newCards]);
+    //       console.log('deck', deck);
+    //       debugger;
+    //     }).catch((err) => {
+    //       console.error('Error', err);
+    //     });
+    //     return cardArray;
+
 
 
   useEffect(
     () => {
+      //add clause about remaining to add new deck
       if(!deckID) {
-        fetchNewDeck();  
+          fetchNewDeck();
+          // debugger; 
       }
-        deckArray = getDeck();
-        setDeck(deckArray);
-        debugger;
-        console.log(deck);
-    }, [deckID]);
+      if(deckID) {
+        // debugger;
+        getDeck();
+        // debugger;
+        // setDeck(oldDeck => [...oldDeck,deckArray]);
+        console.log("deck", deck);
+        }
+      // console.log("deck", deck);
+    }, [deckID, deck]);
 
 
     
