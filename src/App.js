@@ -24,6 +24,9 @@ const App = () =>{
   // }
 
   const [deckID, setDeckID] = useState();
+  const [deck, setDeck] = useState([]);
+
+  let deckArray = [];
 
   // const [playerHands, setPlayerHands] = useState();
 
@@ -37,8 +40,8 @@ const App = () =>{
   // const [dealer, setDealer] = useState();
 
   const fetchNewDeck = () => {
-    const url = `${deckURL}${deckCount}`;
-    fetch(url)
+    let url1 = `${deckURL}${deckCount}`;
+    fetch(url1)
       .then((response) => response.json())
       .then((response) => {
         const newDeckID = response.deck_id;
@@ -65,14 +68,43 @@ const App = () =>{
   //       console.error(err);
   //     });
   // }
+  function getDeck() {
+    let cardArray = [];
+    let url2 = `${drawURL1}${deckID}${drawURL2}52`;
+    fetch(url2)
+        .then((response) => response.json())
+        .then((response) => {
+          // debugger;
+          let newCards = response.cards;
+          console.log(newCards);
+          for(let i=0; i<newCards.length; i++) {
+            cardArray.push(newCards[i]);
+          }
+
+          debugger;
+          setDeck(newCards);
+        }).catch((err) => {
+          console.error(err);
+          debugger;
+        });
+        return cardArray;
+  }
 
 
   useEffect(
     () => {
       if(!deckID) {
-        fetchNewDeck();
+        fetchNewDeck();  
       }
+        deckArray = getDeck();
+        setDeck(deckArray);
+        debugger;
+        console.log(deck);
     }, [deckID]);
+
+
+    
+
 
   //Blackjack functions here
 
