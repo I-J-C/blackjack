@@ -23,7 +23,8 @@ const Gameboard = (props) => {
     let nextCard = count;
     let drawnCards;
     let dealerAce = false;
-    let dealerLocalValue;
+    let dealerLength = 0;
+    let dealerTotal = 0;
 
     //Sourced useInterval hook from: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
     //literally gives permission to copy-paste in document for use.
@@ -95,6 +96,8 @@ const Gameboard = (props) => {
                 setPlayer(player => [...player, element]);
                 setPlayerValue(playerValue => playerValue + cardValue(element.code, player));
             }else if (playerDealer === dealer) {
+                dealerLength += 1;
+                dealerTotal += cardValue(element.code);
                 setDealer(dealer => [...dealer, element]);
                 setDealerValue(dealerValue => dealerValue + cardValue(element.code, dealer));
             }
@@ -110,10 +113,9 @@ const Gameboard = (props) => {
             if (playerDealer === player) {
                 setPlayerAceCount(count => count + 1);
             } else {
-                debugger;
                 setDealerAceCount(count => count + 1);
-                if (dealerValue + 10 <= 21 || dealer.length === 0){
-                    debugger;
+                if (dealerTotal + 10 <= 21 || dealerLength === 0){
+                    dealerAce = true;
                     setDealerAceAdded(value => true);
                     value += 10;
                 }
@@ -126,8 +128,8 @@ const Gameboard = (props) => {
 
       const aceIncrease = () => {
         if (dealerAceCount !== 0) {
-            let oldValue = dealerValue;
-            if (oldValue + 10 >= 17 && oldValue + 10 <= 21) {
+            let oldValue = dealerTotal;
+            if (oldValue + 10 >= 17 && oldValue + 10 <= 21 && oldValue === dealerValue) {
                 setDealerValue(value => value + 10);
                 setDealerAceAdded(value => true);
                 return true;
@@ -137,6 +139,9 @@ const Gameboard = (props) => {
     }
 
     const resetHand = () => {
+        dealerAce = false;
+        dealerLength = 0;
+        dealerTotal = 0;
         setPlayer(player => []);
         setPlayerValue(value => 0);
         setPlayerStand(value => false);
@@ -150,13 +155,12 @@ const Gameboard = (props) => {
     }
 
     useInterval(() => {
-        if(playerStand) {
+        if(playerStand && !handOver) {
             hit(dealer);
             dealerAce = aceIncrease();
-            if (dealerValue > 21 && dealerAce && dealerValue - 10 < 21) {
+            if (dealerTotal > 21 && dealerAce && dealerTotal - 10 < 21) {
                 setDealerValue(value => value - 10);
                 setDealerAceAdded(value => false);
-                debugger;
             }
         }
     }, (dealerValue >= 17 || dealerAce === true) ? null : 1000);
@@ -167,7 +171,7 @@ const Gameboard = (props) => {
       useEffect(
         () => {
               nextCard = count;
-              if (dealerValue >= 17 || dealerAceAdded === true) {
+              if (dealerValue >= 17 || (dealerAceAdded === true && dealerLength >= 2)) {
                   setMessage(message => "Dealer turn over!")
                   setHandOver(oldValue => true);
                 //   if (dealerAce)
