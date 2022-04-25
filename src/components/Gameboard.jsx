@@ -60,7 +60,7 @@ const Gameboard = (props) => {
     }
 
     const checkBlackJack = () => {
-            if (player.length <= 2 &&  playerAceCount !== 0 && playerValue >= 11) {
+            if (player.length <= 2 &&  playerAceCount !== 0 && playerValue === 11) {
                 setPlayerValue(value => 21);
                 setHandOver(value => true);
                 setPlayerStand(value => true);
@@ -185,7 +185,7 @@ const Gameboard = (props) => {
             if(player.length === 2) {
                 checkBlackJack();
             }
-            if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2)) {
+            if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
                 setMessage(message => "Dealer turn over!")
                 setHandOver(oldValue => true);
             }
