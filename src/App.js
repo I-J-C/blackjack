@@ -65,10 +65,10 @@ const App = () =>{
     if (response.data.cards.length === 0) {
       return;
     }
-    setDeck(oldDeck => [...oldDeck, response.data.cards]);
+    setDeck(oldDeck => response.data.cards);
+    console.log('deck:', deck);
     })
     .catch(function (error) {
-      // handle error
     console.log(error);
     })
     .then(function () {
@@ -87,7 +87,7 @@ const App = () =>{
         getDeck();
         // console.log("deck", deck);
         }
-    }, [deckID, deck]);
+    }, [deckID, deck, fetchNewDeck]);
 
 
     
@@ -219,13 +219,13 @@ const App = () =>{
   return (
     <div className="App">
       <header className="App-header">
-        <Link to={'/'}>NEW GAME</Link>
+        <Link to={'/'}>GAME</Link>
         <Link to={'/rules'}>RULES</Link>
       </header>
       <div className='main-content'>
       <Routes>
         {/* <Route path="/" element={<Gameboard  deckID={deckID} setDeckID={setDeckID}  fetchNewDeck={fetchNewDeck}/>} /> */}
-        <Route path="/" element={<Gameboard  deckID={deckID} deck={deck} setDeck={setDeck}/>} />
+        <Route path="/" element={<Gameboard  deckID={deckID} deck={deck} setDeck={setDeck} getDeck={getDeck}/>} />
         <Route path="/rules" element={<Rules />} />
       </Routes> 
       </div>

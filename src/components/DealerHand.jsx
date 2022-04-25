@@ -19,13 +19,9 @@ const DealerHand = (props) => {
 
     return(
         <div>
-            DEALER
+            <div className="dealer-title">Dealer</div>
             <Hand cards={props.dealer} />
-            {/* <div className="dealer-title">Dealer</div>
-            <button className="dealer-turn" onClick={dealerTurn}>Dealer Turn</button>
-            <div className="dealerCard">
-                <img src={cardImage} alt='' />
-            </div> */}
+            
         </div>
     )
 }
