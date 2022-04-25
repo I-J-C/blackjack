@@ -44,7 +44,6 @@ const Hand = (props) => {
 
     return (
         <div className="handCard">
-            {props.dealer?"DEALER":"YOU"}
             <div className="hand">
             {props.cards?props.cards.map((card, index) => (<Card card={card} key={index} />)):""}
             </div>

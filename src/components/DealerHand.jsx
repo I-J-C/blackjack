@@ -19,7 +19,8 @@ const DealerHand = (props) => {
 
     return(
         <div>
-            <Hand deckID={props.deckID} setDeckID={props.setDeckID} dealer={true} fetchNewDeck={props.fetchNewDeck} />
+            DEALER
+            <Hand cards={props.dealer} />
             {/* <div className="dealer-title">Dealer</div>
             <button className="dealer-turn" onClick={dealerTurn}>Dealer Turn</button>
             <div className="dealerCard">
