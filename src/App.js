@@ -41,12 +41,10 @@ const App = () =>{
 
   const fetchNewDeck = () => {
     let url1 = `${deckURL}${deckCount}`;
-
     axios.get(url1)
     .then(function (response) {
-    console.log(response.data);
+    // console.log(response.data);
     setDeckID(response.data.deck_id);
-    console.log("deckID", deckID);
     })
     .catch(function (error) {
       // handle error
@@ -57,35 +55,17 @@ const App = () =>{
     });
   }
 
-  // const drawCard = () => {
-  //   const url = `${drawURL1}${deckID}${drawURL2}1`;
-  //   fetch(url)
-  //     .then((response) => response.json())
-  //     .then((response) => {
-  //       // console.log(response.cards);
-  //       setDrawnCard(response.cards);
-  //       // format: response.cards is array with all drawn cards
-  //       // response.cards[i].{code, image(pngURL), images([pngURL, svgURL]), suit, value, remaining, success}
-  //       let newCard = new Card(response.cards[0].code, response.cards[0].image);
-  //       setCurrentCard(newCard);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }
-  function getDeck() {
+
+  const getDeck= () => {
     // let cardArray = [];
     let url2 = `${drawURL1}${deckID}${drawURL2}52`;
 
     axios.get(url2)
     .then(function (response) {
-    console.log("cards response", response.data.cards);
     if (response.data.cards.length === 0) {
-      console.log("deck", deck);
       return;
     }
     setDeck(oldDeck => [...oldDeck, response.data.cards]);
-    // debugger;
     })
     .catch(function (error) {
       // handle error
@@ -95,26 +75,6 @@ const App = () =>{
     // always executed
     });
   }
-
-    // fetch(url2)
-    //     .then((response) => response.json())
-    //     .then((response) => {
-    //       // if (response.error) {
-    //       //   setTimeout(() => {
-    //       //     cardArray = getDeck();
-    //       //   }, 500);
-    //       //   return;
-    //       // }
-    //       let newCards = response.cards;
-    //       console.log('cards response', newCards);
-    //       setDeck(oldDeck => [...oldDeck,newCards]);
-    //       console.log('deck', deck);
-    //       debugger;
-    //     }).catch((err) => {
-    //       console.error('Error', err);
-    //     });
-    //     return cardArray;
-
 
 
   useEffect(
@@ -122,16 +82,11 @@ const App = () =>{
       //add clause about remaining to add new deck
       if(!deckID) {
           fetchNewDeck();
-          // debugger; 
       }
       if(deckID) {
-        // debugger;
         getDeck();
-        // debugger;
-        // setDeck(oldDeck => [...oldDeck,deckArray]);
-        console.log("deck", deck);
+        // console.log("deck", deck);
         }
-      // console.log("deck", deck);
     }, [deckID, deck]);
 
 
@@ -270,7 +225,7 @@ const App = () =>{
       <div className='main-content'>
       <Routes>
         {/* <Route path="/" element={<Gameboard  deckID={deckID} setDeckID={setDeckID}  fetchNewDeck={fetchNewDeck}/>} /> */}
-        <Route path="/" element={<Gameboard  deckID={deckID}/>} />
+        <Route path="/" element={<Gameboard  deckID={deckID} deck={deck} setDeck={setDeck}/>} />
         <Route path="/rules" element={<Rules />} />
       </Routes> 
       </div>
