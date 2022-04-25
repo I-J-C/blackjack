@@ -20,6 +20,7 @@ const Gameboard = (props) => {
     const [handOver, setHandOver] = useState(false);
     const [message, setMessage] = useState('');
     const [handActive, setHandActive] = useState(false);
+    const [dealing, setDealing] = useState(false);
     let nextCard = count;
     let drawnCards;
     let dealerAce = false;
@@ -56,6 +57,7 @@ const Gameboard = (props) => {
         }, 1000);
         setTimeout(() => {
             hit(player);
+            setDealing(value => false);
         }, 2000);
     }
 
@@ -215,6 +217,7 @@ const Gameboard = (props) => {
                 if (props.deck.length - count <= 15) {
                     shuffleDeck();
                 }
+                setDealing(value => true);
                 setHandActive(oldValue => true);
                 resetHand();
                 startHand();
@@ -229,10 +232,10 @@ const Gameboard = (props) => {
 
                 <div>Player Value: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
                 <div className="actions">
-                    <button disabled={playerStand || handOver} className="hitButton" onClick={() => {
+                    <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
                         hit(player);
                     }}>Hit</button>
-                    <button disabled={playerStand || handOver} className="standButton" onClick={() => {
+                    <button disabled={playerStand || handOver || dealing || !handActive} className="standButton" onClick={() => {
                         setPlayerStand(oldValue => true);
                         if (playerAceCount !== 0) {
                             if (playerValue + 10 <= 21) {
