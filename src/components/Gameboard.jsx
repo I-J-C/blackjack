@@ -161,6 +161,7 @@ const Gameboard = (props) => {
             if (dealerTotal > 21 && dealerAce && dealerTotal - 10 < 21) {
                 setDealerValue(value => value - 10);
                 setDealerAceAdded(value => false);
+                setHandOver(value => false);
             }
         }
     }, (dealerValue >= 17 || dealerAce === true) ? null : 1000);
