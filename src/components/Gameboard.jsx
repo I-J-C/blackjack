@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DealerHand from "./DealerHand";
 import Player from "./Player";
 
@@ -22,13 +22,17 @@ const Gameboard = (props) => {
     const [handActive, setHandActive] = useState(false);
     const [dealing, setDealing] = useState(false);
     const [betActive, setBetActive] = useState(false);
+    const [bet, setBet] = useState(0);
     const [minBet, setMinBet] = useState(5);
     const [wallet, setWallet] = useState(100);
+    const inputRef = useRef(null);
+    let betAmount = 0;
     let nextCard = count;
     let drawnCards;
     let dealerAce = false;
     let dealerLength = 0;
     let dealerTotal = 0;
+    let winner;
 
     //Sourced useInterval hook from: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
     //literally gives permission to copy-paste in document for use.
@@ -53,7 +57,6 @@ const Gameboard = (props) => {
     }
 
     const startHand = () => {
-        // start the game with 1 card for player then 1 for dealer then 1 for player
         hit(player);
         setTimeout(() => {
             hit(dealer);
@@ -74,7 +77,6 @@ const Gameboard = (props) => {
     }
 
     const shuffleDeck = () => {
-        //change props.deck to contain newly shuffled deck to draw from
         let url2 = `${drawURL1}${props.deckID}${shuffle}`;
 
         axios.get(url2)
@@ -85,11 +87,7 @@ const Gameboard = (props) => {
                 console.log("Deck Shuffled");
             })
             .catch(function (error) {
-                // handle error
                 console.log(error);
-            })
-            .then(function () {
-                // always executed
             });
     }
 
@@ -156,6 +154,7 @@ const Gameboard = (props) => {
         dealerAce = false;
         dealerLength = 0;
         dealerTotal = 0;
+        winner = null;
         setPlayer(player => []);
         setPlayerValue(value => 0);
         setPlayerStand(value => false);
@@ -181,8 +180,19 @@ const Gameboard = (props) => {
         }
     }, (dealerValue >= 17 || dealerAce === true) ? null : 1000);
 
-
-
+    const checkWinner = () => {
+        if (dealerValue > 21 && playerValue <= 21) {
+            winner = player;
+        }else if (dealerValue <= 21 && playerValue > 21) {
+            winner = dealer;
+        }else if (dealerValue > playerValue) {
+            winner = dealer;
+        }else if (playerValue > dealerValue) {
+            winner = player;
+        }else{
+            winner = null;
+        }
+    }
 
     useEffect(
         () => {
@@ -191,7 +201,7 @@ const Gameboard = (props) => {
                 checkBlackJack();
             }
             if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
-                setMessage(message => "Dealer turn over!")
+                // setMessage(message => "Dealer turn over!")
                 setHandOver(oldValue => true);
             }
             if (playerValue > 21) {
@@ -210,33 +220,59 @@ const Gameboard = (props) => {
             if (handOver === true) {
                 setHandActive(oldValue => false);
                 //settle bets
-            }
+                checkWinner();
+                if(winner === dealer) {
+                    setMessage(message => message + " Dealer Wins!");
+                    if (wallet === 0) {
+                        setMessage(message => message + "Game Over. Please try again!");
+                    }
+                } else if (winner === player) {
+                    setMessage(message => message + " You Win!");
+                    setWallet(value => value + bet + bet);
+                } else {
+                    setMessage(message => "It's a tie!");
+                    setWallet(value => value + bet);
+                }
+                setBetActive(oldValue => false);
+                setBet(oldValue => 0);
 
-        }, [playerValue, dealerValue, dealerAceAdded, handOver, player]);
+
+            }
+        }, [playerValue, dealerValue, dealerAceAdded, handOver, player, betActive]);
 
     return (
-        <div class="gameBoard">
-            <div class="board-header">
+        <div className="gameBoard">
+            <div className="board-header">
             <div className="message">{message}</div>
             <div className="bet-message">
-                <p>Wallet: {wallet}</p>
-                <p>Minimum Bet: {minBet}</p>
+                <p>Wallet: ${wallet}</p>
+                <p>Minimum Bet: ${minBet}</p>
             </div>
             <div className="game-buttons">
-                <div className="bet-form">
+                <form ref={inputRef} className="bet-form">
                     <input type="text"
-                        onKeyPress={(event) => {
+                        onInput={(event) => {
                             if (!/[0-9]/.test(event.key)) {
                                 event.preventDefault();
                             }
+                            betAmount = parseInt(event.target.value);
+                            // debugger;
                         }}
                     />
 
-            <button onClick={()=>{
-                // if clause to check bet value
-                setBetActive(value => true);
+            <button disabled={betActive || handActive} onClick={(e)=>{
+                if (betAmount >= minBet && betAmount <= wallet){
+                    setWallet(value => value - betAmount);
+                    setBet(value => betAmount);
+                    setBetActive(value => true);
+                    resetHand();
+                    inputRef.current.reset();
+                }else{
+                    e.preventDefault();
+                    alert("Please input a valid bet");
+                }
             }}>Bet</button> 
-            </div>
+            </form>
             <button disabled={handActive || !betActive} onClick={() => {
                 if (props.deck.length - count <= 15) {
                     shuffleDeck();
@@ -244,6 +280,7 @@ const Gameboard = (props) => {
                 setDealing(value => true);
                 setHandActive(oldValue => true);
                 resetHand();
+                setBetActive(value => false);
                 startHand();
             }}>Start Hand</button>
             </div>
@@ -255,7 +292,6 @@ const Gameboard = (props) => {
             </div>
             <div className="playerBoard">
 
-                
                 <div className="actions">
                     <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
                         hit(player);
@@ -268,12 +304,6 @@ const Gameboard = (props) => {
                             }
                         }
                     }}>Stand</button>
-                    {/* <button disabled={playerStand || handOver} className="blackJack-button" onClick={()=>{
-                            debugger;
-                            checkBlackJack();
-                            debugger;
-                        
-                    }}>BlackJack Checker</button> */}
                 </div>
                 <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
                 <Player player={player} />

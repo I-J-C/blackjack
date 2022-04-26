@@ -37,6 +37,11 @@ body{
 .extra-cards {
   margin-left: -190px;
 }
+input {
+  font-size: 1em;
+  width: 50px;
+  padding: 10px 10px;
+}
 
 button {
   width: fit-content;
@@ -71,7 +76,7 @@ button {
 .rules {
   text-align: left;
   margin-left: 10px;
-  margin: 10px;
+  margin: 2%;
   background: url("../public/black-chalkboard-background.jpg");
   color: white;
   padding: 10px;
