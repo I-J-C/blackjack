@@ -21,6 +21,9 @@ const Gameboard = (props) => {
     const [message, setMessage] = useState('');
     const [handActive, setHandActive] = useState(false);
     const [dealing, setDealing] = useState(false);
+    const [betActive, setBetActive] = useState(false);
+    const [minBet, setMinBet] = useState(5);
+    const [wallet, setWallet] = useState(100);
     let nextCard = count;
     let drawnCards;
     let dealerAce = false;
@@ -212,8 +215,29 @@ const Gameboard = (props) => {
         }, [playerValue, dealerValue, dealerAceAdded, handOver, player]);
 
     return (
-        <div>
-            <button disabled={handActive} onClick={() => {
+        <div class="gameBoard">
+            <div class="board-header">
+            <div className="message">{message}</div>
+            <div className="bet-message">
+                <p>Wallet: {wallet}</p>
+                <p>Minimum Bet: {minBet}</p>
+            </div>
+            <div className="game-buttons">
+                <div className="bet-form">
+                    <input type="text"
+                        onKeyPress={(event) => {
+                            if (!/[0-9]/.test(event.key)) {
+                                event.preventDefault();
+                            }
+                        }}
+                    />
+
+            <button onClick={()=>{
+                // if clause to check bet value
+                setBetActive(value => true);
+            }}>Bet</button> 
+            </div>
+            <button disabled={handActive || !betActive} onClick={() => {
                 if (props.deck.length - count <= 15) {
                     shuffleDeck();
                 }
@@ -222,15 +246,16 @@ const Gameboard = (props) => {
                 resetHand();
                 startHand();
             }}>Start Hand</button>
-
-            <div className="message">{message}</div>
+            </div>
+            </div>
+            <div className="board-space">
             <div className="dealerBoard">
-                <div className="dealer-value">Dealer Value: {dealerValue}{(dealerAceCount !== 0 && dealerValue + 10 <= 17) ? `(${dealerValue + 10})` : ""}</div>
+                <div className="dealer-value">Dealer: {dealerValue}{(dealerAceCount !== 0 && dealerValue + 10 <= 17) ? `(${dealerValue + 10})` : ""}</div>
                 <DealerHand dealer={dealer} />
             </div>
             <div className="playerBoard">
 
-                <div>Player Value: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
+                
                 <div className="actions">
                     <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
                         hit(player);
@@ -250,9 +275,10 @@ const Gameboard = (props) => {
                         
                     }}>BlackJack Checker</button> */}
                 </div>
+                <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
                 <Player player={player} />
             </div>
-
+            </div>
         </div>
     )
 }

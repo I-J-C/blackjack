@@ -1,3 +1,10 @@
+body{
+  min-height: 100%;
+  background-color: #277c2f;
+  font-family: 'Rye', cursive;
+  font-size: 1.2em;
+}
+
 .App {
   text-align: center;
 }
@@ -7,15 +14,46 @@
   pointer-events: none;
 }
 
-.cardImage {
-  width: fit-content;
-  height: fit-content;
+.message {
+  min-height: 20px;
+  margin: 10px;
+  font-size: 2em;
+}
+
+.bet-message * {
+  margin: 5px;
 }
 
 .hand {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}
+
+.extra-cards {
+  margin-left: -190px;
+}
+
+button {
+  width: fit-content;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #813606;
+  color: #ddd;
+  font-weight: bold;
+  margin-top: 10px;
+  font-family: 'Rye', cursive;
+}
+
+.actions {
+  display: inline-flex;
+  width: 100%;
+  max-width: 400px;
+  justify-content: space-evenly;
 }
 
 .App-header {
@@ -33,9 +71,19 @@
 .rules {
   text-align: left;
   margin-left: 10px;
+  margin: 10px;
+  background: url("../public/black-chalkboard-background.jpg");
+  color: white;
+  padding: 10px;
+  font-family: 'Cabin Sketch', cursive;
 }
-
-
+.board-space {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: flex-end;
+}
 
 .rules-title{
   text-align: center;
@@ -52,7 +100,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
   font-size: calc(10px + 2vmin);
   color: white;
 }

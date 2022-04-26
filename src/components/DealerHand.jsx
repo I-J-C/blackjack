@@ -19,9 +19,7 @@ const DealerHand = (props) => {
 
     return(
         <div>
-            <div className="dealer-title">Dealer</div>
             <Hand cards={props.dealer} />
-            
         </div>
     )
 }
