@@ -252,9 +252,6 @@ const Gameboard = (props) => {
                 <form ref={inputRef} className="bet-form">
                     <input type="text"
                         onInput={(event) => {
-                            if (!/[0-9]/.test(event.key)) {
-                                event.preventDefault();
-                            }
                             betAmount = parseInt(event.target.value);
                             // debugger;
                         }}
@@ -270,6 +267,7 @@ const Gameboard = (props) => {
                 }else{
                     e.preventDefault();
                     alert("Please input a valid bet");
+                    inputRef.current.reset();
                 }
             }}>Bet</button> 
             </form>
