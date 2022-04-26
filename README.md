@@ -31,16 +31,16 @@ Blackjack is the popular casino game that is played all over the world. The play
 
 ## Wire Frames
 ### Game Screenshot:
-[https://imgur.com/Wb3Foub]
+![game screenshot](https://imgur.com/Wb3Foub)
 
 
 ### Components:
-[https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768]
+![components wireframe 1](https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768)
 
-[https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768]
+![components wireframe 2](https://media.git.generalassemb.ly/user/42127/files/c7a7c580-bce0-11ec-936c-9051afd7c768)
 
 ### Game Board:
-[https://media.git.generalassemb.ly/user/42127/files/d9896880-bce0-11ec-8225-8b81243afe24]
+![game board wireframe](https://media.git.generalassemb.ly/user/42127/files/d9896880-bce0-11ec-8225-8b81243afe24)
 
 ## User Stories
 - As a player, I want to be able to start the game with some amount of money to bet.
