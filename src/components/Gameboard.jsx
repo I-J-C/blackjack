@@ -224,7 +224,7 @@ const Gameboard = (props) => {
                 if(winner === dealer) {
                     setMessage(message => message + " Dealer Wins!");
                     if (wallet === 0) {
-                        setMessage(message => message + "Game Over. Please try again!");
+                        setMessage(message => message + " Game Over. Please try again!");
                     }
                 } else if (winner === player) {
                     setMessage(message => message + " You Win!");
