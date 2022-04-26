@@ -257,7 +257,8 @@ const Gameboard = (props) => {
                         }}
                     />
 
-            <button disabled={betActive || handActive} onClick={(e)=>{
+            <button disabled={betActive || handActive} type="submit" onClick={(e)=>{
+                e.preventDefault();
                 if (betAmount >= minBet && betAmount <= wallet){
                     setWallet(value => value - betAmount);
                     setBet(value => betAmount);
@@ -265,7 +266,6 @@ const Gameboard = (props) => {
                     resetHand();
                     inputRef.current.reset();
                 }else{
-                    e.preventDefault();
                     alert("Please input a valid bet");
                     inputRef.current.reset();
                 }
