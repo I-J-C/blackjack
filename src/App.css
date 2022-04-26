@@ -114,11 +114,10 @@ button {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+@media only screen and (max-width: 600px) {
+  .board-space {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
   }
 }

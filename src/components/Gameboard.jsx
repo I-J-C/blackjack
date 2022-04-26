@@ -201,7 +201,6 @@ const Gameboard = (props) => {
                 checkBlackJack();
             }
             if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
-                // setMessage(message => "Dealer turn over!")
                 setHandOver(oldValue => true);
             }
             if (playerValue > 21) {
@@ -235,8 +234,6 @@ const Gameboard = (props) => {
                 }
                 setBetActive(oldValue => false);
                 setBet(oldValue => 0);
-
-
             }
         }, [playerValue, dealerValue, dealerAceAdded, handOver, player, betActive]);
 
