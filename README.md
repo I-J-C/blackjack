@@ -31,7 +31,7 @@ Blackjack is the popular casino game that is played all over the world. The play
 
 ## Wire Frames
 ### Game Screenshot:
-![game screenshot](https://imgur.com/Wb3Foub)
+![game screenshot](https://i.imgur.com/Wb3Foub.png)
 
 
 ### Components:
