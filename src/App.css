@@ -77,10 +77,10 @@ button {
   text-align: left;
   margin-left: 10px;
   margin: 2%;
-  background: url("../public/black-chalkboard-background.jpg");
+  background: url("../public/black-chalkboard-background.jpeg");
   color: white;
   padding: 10px;
-  font-family: 'Cabin Sketch', cursive;
+  font-family: 'Kalam', cursive;
 }
 .board-space {
   display: flex;

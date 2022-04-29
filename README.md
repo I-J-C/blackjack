@@ -6,6 +6,7 @@ https://ijc-blackjack.surge.sh/
 
 ## Technologies Used
 - Git/Github
+- React.js
 - Create-react-app
 - HTML/CSS
 - JavaScript
@@ -27,7 +28,7 @@ Blackjack is the popular casino game that is played all over the world. The play
 - All players are dealt 2 cards (face up) and the dealer is also dealt a card. 
 - The player can then choose to either hit (draw an additional card - can be chosen repeatedly), or stand (end that hand).
 -After the player(s) turn, the dealer then reveals their face down card and plays their hand, choosing to either hit or stand in the same way as the player. Some dealers are bound by certain rules, such as standing on 17 (will implement 1 dealer ruleset in MVP).
--Once the dealer is done, the hands are compared, the winner is chosen, bets are resolved, and a new hand begins!
+- Once the dealer is done, the hands are compared, the winner is chosen, bets are resolved, and a new hand begins!
 
 ## Wire Frames
 ### Game Screenshot:

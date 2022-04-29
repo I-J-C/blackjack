@@ -205,7 +205,7 @@ const Gameboard = (props) => {
             }
             if (playerValue > 21) {
                 setHandOver(oldValue => true);
-                setMessage(message => "Player Bust!");
+                setMessage(message => "Bust!");
             } else if (dealerValue > 21) {
                 if (dealerAceAdded && dealerTotal - 10 < 21) {
                     setDealerValue(value => value - 10);
