@@ -201,10 +201,10 @@ const Gameboard = (props) => {
                 checkBlackJack();
             }
             if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
-                setHandOver(oldValue => true);
+                setHandOver(value => true);
             }
             if (playerValue > 21) {
-                setHandOver(oldValue => true);
+                setHandOver(value => true);
                 setMessage(message => "Bust!");
             } else if (dealerValue > 21) {
                 if (dealerAceAdded && dealerTotal - 10 < 21) {
@@ -212,12 +212,12 @@ const Gameboard = (props) => {
                     setDealerAceAdded(value => false);
                     dealerAce = false;
                 } else {
-                    setHandOver(oldValue => true);
+                    setHandOver(value => true);
                     setMessage(message => "Dealer Bust!");
                 }
             }
             if (handOver === true) {
-                setHandActive(oldValue => false);
+                setHandActive(value => false);
                 //settle bets
                 checkWinner();
                 if(winner === dealer) {
@@ -232,8 +232,8 @@ const Gameboard = (props) => {
                     setMessage(message => "It's a tie!");
                     setWallet(value => value + bet);
                 }
-                setBetActive(oldValue => false);
-                setBet(oldValue => 0);
+                setBetActive(value => false);
+                setBet(value => 0);
             }
         }, [playerValue, dealerValue, dealerAceAdded, handOver, player, betActive]);
 
@@ -273,7 +273,7 @@ const Gameboard = (props) => {
                     shuffleDeck();
                 }
                 setDealing(value => true);
-                setHandActive(oldValue => true);
+                setHandActive(value => true);
                 resetHand();
                 setBetActive(value => false);
                 startHand();
@@ -292,7 +292,7 @@ const Gameboard = (props) => {
                         hit(player);
                     }}>Hit</button>
                     <button disabled={playerStand || handOver || dealing || !handActive} className="standButton" onClick={() => {
-                        setPlayerStand(oldValue => true);
+                        setPlayerStand(value => true);
                         if (playerAceCount !== 0) {
                             if (playerValue + 10 <= 21) {
                                 setPlayerValue(value => value + 10);

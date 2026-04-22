@@ -1,11 +1,15 @@
 import Hand from "./Hand";
 
-const Player = (props) => {
-    return(
+const Player = ({ player }) => {
+    const hands = Array.isArray(player[0]) ? player : [player];
+
+    return (
         <div>
-            <Hand cards={props.player}/>
+            {hands.map((hand, index) => (
+                <Hand key={index} cards={hand} />
+            ))}
         </div>
-    )
-}
+    );
+};
 
 export default Player;
