@@ -67,7 +67,6 @@ const App = () =>{
       </header>
       <div className='main-content'>
       <Routes>
-        {/* <Route path="/" element={<Gameboard  deckID={deckID} setDeckID={setDeckID}  fetchNewDeck={fetchNewDeck}/>} /> */}
         <Route path="/" element={<Gameboard  deckID={deckID} deck={deck} setDeck={setDeck} getDeck={getDeck}/>} />
         <Route path="/rules" element={<Rules />} />
       </Routes> 

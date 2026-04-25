@@ -5,7 +5,7 @@ import Player from "./Player";
 const drawURL1 = 'https://deckofcardsapi.com/api/deck/';
 const shuffle = '/shuffle/';
 
-const Gameboard = (props) => {
+const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
     const axios = require('axios');
     const [count, setCount] = useState(0);
 
@@ -26,6 +26,7 @@ const Gameboard = (props) => {
     const [minBet, setMinBet] = useState(5);
     const [wallet, setWallet] = useState(100);
     const inputRef = useRef(null);
+    const faceDown = true;
     let betAmount = 0;
     let nextCard = count;
     let drawnCards;
@@ -63,28 +64,31 @@ const Gameboard = (props) => {
         }, 1000);
         setTimeout(() => {
             hit(player);
-            setDealing(value => false);
         }, 2000);
+        setTimeout(() => {
+            hit(dealer, faceDown);
+            setDealing(value => false);
+        }, 3000);
     }
 
     const checkBlackJack = () => {
-            if (player.length <= 2 &&  playerAceCount !== 0 && playerValue === 11) {
-                setPlayerValue(value => 21);
-                setHandOver(value => true);
-                setPlayerStand(value => true);
-                setMessage(value => "BlackJack!");
-            }
+        if (player.length <= 2 && playerAceCount !== 0 && playerValue === 11) {
+            setPlayerValue(value => 21);
+            setHandOver(value => true);
+            setPlayerStand(value => true);
+            setMessage(value => "BlackJack!");
+        }
     }
 
     const shuffleDeck = () => {
-        let url2 = `${drawURL1}${props.deckID}${shuffle}`;
+        let url2 = `${drawURL1}${deckID}${shuffle}`;
 
         axios.get(url2)
             .then(function (response) {
-                console.log(response.data);
-                props.getDeck();
+                // console.log(response.data);
+                getDeck();
                 setCount(value => 0);
-                console.log("Deck Shuffled");
+                // console.log("Deck Shuffled");
             })
             .catch(function (error) {
                 console.log(error);
@@ -94,16 +98,18 @@ const Gameboard = (props) => {
     const drawCards = (amount) => {
         let cards = [];
         for (let i = 0; i < amount; i++) {
-            cards.push(props.deck[nextCard + i]);
+            cards.push(deck[nextCard + i]);
             nextCard += 1;
         }
         setCount(count => count + 1);
         return cards;
     }
 
-    const hit = (playerDealer) => {
+    const hit = (playerDealer, faceDown = false) => {
         drawnCards = drawCards(1);
         drawnCards.forEach(element => {
+            if (faceDown) element.faceDown = true;
+            console.log('element', element);
             if (playerDealer === player) {
                 setPlayer(player => [...player, element]);
                 setPlayerValue(playerValue => playerValue + cardValue(element.code, player));
@@ -183,13 +189,13 @@ const Gameboard = (props) => {
     const checkWinner = () => {
         if (dealerValue > 21 && playerValue <= 21) {
             winner = player;
-        }else if (dealerValue <= 21 && playerValue > 21) {
+        } else if (dealerValue <= 21 && playerValue > 21) {
             winner = dealer;
-        }else if (dealerValue > playerValue) {
+        } else if (dealerValue > playerValue) {
             winner = dealer;
-        }else if (playerValue > dealerValue) {
+        } else if (playerValue > dealerValue) {
             winner = player;
-        }else{
+        } else {
             winner = null;
         }
     }
@@ -197,7 +203,7 @@ const Gameboard = (props) => {
     useEffect(
         () => {
             nextCard = count;
-            if(player.length === 2) {
+            if (player.length === 2) {
                 checkBlackJack();
             }
             if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
@@ -220,7 +226,7 @@ const Gameboard = (props) => {
                 setHandActive(value => false);
                 //settle bets
                 checkWinner();
-                if(winner === dealer) {
+                if (winner === dealer) {
                     setMessage(message => message + " Dealer Wins!");
                     if (wallet === 0) {
                         setMessage(message => message + "Game Over. Please try again!");
@@ -240,69 +246,69 @@ const Gameboard = (props) => {
     return (
         <div className="gameBoard">
             <div className="board-header">
-            <div className="message">{message}</div>
-            <div className="bet-message">
-                <p>Wallet: ${wallet}</p>
-                <p>Minimum Bet: ${minBet}</p>
-            </div>
-            <div className="game-buttons">
-                <form ref={inputRef} className="bet-form">
-                    <input type="text"
-                        onInput={(event) => {
-                            betAmount = parseInt(event.target.value);
-                            // debugger;
-                        }}
-                    />
+                <div className="message">{message}</div>
+                <div className="bet-message">
+                    <p>Wallet: ${wallet}</p>
+                    <p>Minimum Bet: ${minBet}</p>
+                </div>
+                <div className="game-buttons">
+                    <form ref={inputRef} className="bet-form">
+                        <input type="text"
+                            onInput={(event) => {
+                                betAmount = parseInt(event.target.value);
+                                // debugger;
+                            }}
+                        />
 
-            <button disabled={betActive || handActive} type="submit" onClick={(e)=>{
-                e.preventDefault();
-                if (betAmount >= minBet && betAmount <= wallet){
-                    setWallet(value => value - betAmount);
-                    setBet(value => betAmount);
-                    setBetActive(value => true);
-                    resetHand();
-                    inputRef.current.reset();
-                }else{
-                    alert("Please input a valid bet");
-                    inputRef.current.reset();
-                }
-            }}>Bet</button> 
-            </form>
-            <button disabled={handActive || !betActive} onClick={() => {
-                if (props.deck.length - count <= 15) {
-                    shuffleDeck();
-                }
-                setDealing(value => true);
-                setHandActive(value => true);
-                resetHand();
-                setBetActive(value => false);
-                startHand();
-            }}>Start Hand</button>
-            </div>
+                        <button disabled={betActive || handActive} type="submit" onClick={(e) => {
+                            e.preventDefault();
+                            if (betAmount >= minBet && betAmount <= wallet) {
+                                setWallet(value => value - betAmount);
+                                setBet(value => betAmount);
+                                setBetActive(value => true);
+                                resetHand();
+                                inputRef.current.reset();
+                            } else {
+                                alert("Please input a valid bet");
+                                inputRef.current.reset();
+                            }
+                        }}>Bet</button>
+                    </form>
+                    <button disabled={handActive || !betActive} onClick={() => {
+                        if (deck.length - count <= 15) {
+                            shuffleDeck();
+                        }
+                        setDealing(value => true);
+                        setHandActive(value => true);
+                        resetHand();
+                        setBetActive(value => false);
+                        startHand();
+                    }}>Start Hand</button>
+                </div>
             </div>
             <div className="board-space">
-            <div className="dealerBoard">
-                <div className="dealer-value">Dealer: {dealerValue}{(dealerAceCount !== 0 && dealerValue + 10 <= 17) ? `(${dealerValue + 10})` : ""}</div>
-                <DealerHand dealer={dealer} />
-            </div>
-            <div className="playerBoard">
-
-                <div className="actions">
-                    <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
-                        hit(player);
-                    }}>Hit</button>
-                    <button disabled={playerStand || handOver || dealing || !handActive} className="standButton" onClick={() => {
-                        setPlayerStand(value => true);
-                        if (playerAceCount !== 0) {
-                            if (playerValue + 10 <= 21) {
-                                setPlayerValue(value => value + 10);
-                            }
-                        }
-                    }}>Stand</button>
+                <div className="dealerBoard">
+                    <div className="dealer-value">Dealer: {dealerValue}{(dealerAceCount !== 0 && dealerValue + 10 <= 17) ? `(${dealerValue + 10})` : ""}</div>
+                    <DealerHand dealer={dealer} />
                 </div>
-                <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
-                <Player player={player} />
-            </div>
+                <div className="playerBoard">
+
+                    <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
+                    <div className="actions">
+                        <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
+                            hit(player);
+                        }}>Hit</button>
+                        <button disabled={playerStand || handOver || dealing || !handActive} className="standButton" onClick={() => {
+                            setPlayerStand(value => true);
+                            if (playerAceCount !== 0) {
+                                if (playerValue + 10 <= 21) {
+                                    setPlayerValue(value => value + 10);
+                                }
+                            }
+                        }}>Stand</button>
+                    </div>
+                    <Player player={player} />
+                </div>
             </div>
         </div>
     )
