@@ -5,22 +5,24 @@ import Player from "./Player";
 const drawURL1 = 'https://deckofcardsapi.com/api/deck/';
 const shuffle = '/shuffle/';
 
-const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
+const Gameboard = ({ deckID, deck, setDeck, getDeck }) => {
     const axios = require('axios');
     const [count, setCount] = useState(0);
 
     const [player, setPlayer] = useState([]);
+    // todo: move playerAceCount, playerValue, and playerStand to hand level
     const [playerAceCount, setPlayerAceCount] = useState(0);
     const [playerValue, setPlayerValue] = useState(0);
     const [playerStand, setPlayerStand] = useState(false);
+    // !
+    const [dealerTurn, setDealerTurn] = useState(false);
     const [dealer, setDealer] = useState([]);
     const [dealerValue, setDealerValue] = useState(0);
     const [dealerAceCount, setDealerAceCount] = useState(0);
-    const [dealerAceAdded, setDealerAceAdded] = useState(0);
+    const [dealerAceAdded, setDealerAceAdded] = useState(false);
     const [handOver, setHandOver] = useState(false);
     const [message, setMessage] = useState('');
-    const [handActive, setHandActive] = useState(false);
-    const [dealing, setDealing] = useState(false);
+    const [playerActive, setPlayerActive] = useState(false);
     const [betActive, setBetActive] = useState(false);
     const [bet, setBet] = useState(0);
     const [minBet, setMinBet] = useState(5);
@@ -29,10 +31,6 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
     const faceDown = true;
     let betAmount = 0;
     let nextCard = count;
-    let drawnCards;
-    let dealerAce = false;
-    let dealerLength = 0;
-    let dealerTotal = 0;
     let winner;
 
     //Sourced useInterval hook from: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
@@ -55,20 +53,6 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
                 return () => clearInterval(id);
             }
         }, [delay]);
-    }
-
-    const startHand = () => {
-        hit(player);
-        setTimeout(() => {
-            hit(dealer);
-        }, 1000);
-        setTimeout(() => {
-            hit(player);
-        }, 2000);
-        setTimeout(() => {
-            hit(dealer, faceDown);
-            setDealing(value => false);
-        }, 3000);
     }
 
     const checkBlackJack = () => {
@@ -106,20 +90,32 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
     }
 
     const hit = (playerDealer, faceDown = false) => {
-        drawnCards = drawCards(1);
-        drawnCards.forEach(element => {
-            if (faceDown) element.faceDown = true;
+        drawCards(1).forEach(element => {
+            if (faceDown) {element.faceDown = true;}
             console.log('element', element);
             if (playerDealer === player) {
                 setPlayer(player => [...player, element]);
                 setPlayerValue(playerValue => playerValue + cardValue(element.code, player));
             } else if (playerDealer === dealer) {
-                dealerLength += 1;
-                dealerTotal += cardValue(element.code);
                 setDealer(dealer => [...dealer, element]);
                 setDealerValue(dealerValue => dealerValue + cardValue(element.code, dealer));
             }
         });
+    }
+
+    const startHand = () => {
+        hit(player);
+        setTimeout(() => {
+            hit(dealer, false);
+        }, 1000);
+        setTimeout(() => {
+            hit(player, false);
+        }, 2000);
+        console.log('facedown card!');
+        setTimeout(() => {
+            hit(dealer, true);
+            setPlayerActive(value => true);
+        }, 3000);
     }
 
     const cardValue = (cardCode, playerDealer) => {
@@ -132,8 +128,7 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
                 setPlayerAceCount(count => count + 1);
             } else {
                 setDealerAceCount(count => count + 1);
-                if (dealerTotal + 10 <= 21 || dealerLength === 0) {
-                    dealerAce = true;
+                if (dealerValue + 10 <= 21 || dealer.length === 0) {
                     setDealerAceAdded(value => true);
                     value += 10;
                 }
@@ -144,47 +139,55 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
         return value;
     }
 
+    // todo: rework this to properly count all dealer hits
     const aceIncrease = () => {
         if (dealerAceCount !== 0) {
-            let oldValue = dealerTotal;
+            let oldValue = dealerValue;
             if (oldValue + 10 >= 17 && oldValue + 10 <= 21 && oldValue === dealerValue) {
                 setDealerValue(value => value + 10);
                 setDealerAceAdded(value => true);
-                return true;
             }
         }
-        return false;
     }
 
     const resetHand = () => {
-        dealerAce = false;
-        dealerLength = 0;
-        dealerTotal = 0;
         winner = null;
+        // player reset
         setPlayer(player => []);
         setPlayerValue(value => 0);
         setPlayerStand(value => false);
         setPlayerAceCount(value => 0);
+        setPlayerActive(value => false);
+        // dealer reset
         setDealer(dealer => []);
+        setDealerTurn(value => false);
         setDealerValue(value => 0);
         setDealerAceAdded(value => false);
         setDealerAceCount(value => 0);
+        // game reset
         setMessage(value => "");
         setHandOver(value => false);
     }
 
     useInterval(() => {
-        if (playerStand && !handOver) {
+        if (dealerTurn) {
+            console.log('dealerValue', dealerValue);
+            // todo: separate flip of dealer card with the next hit - currently both are happening at once
+            console.log('dealer hand', dealer);
+            dealer[1].faceDown = false;
+            if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded && dealer.length() >= 2 && dealerValue - 10 >= 17 && dealerValue - 10 <= 21)) {
+                setDealerTurn(value => false);
+                setHandOver(value => true);
+            }
             hit(dealer);
-            dealerAce = aceIncrease();
-            if (dealerTotal > 21 && dealerAce && dealerTotal - 10 < 21) {
+            aceIncrease();
+            if (dealerValue > 21 && dealerAceAdded && dealerValue - 10 < 21) {
                 setDealerValue(value => value - 10);
-                dealerAce = false;
                 setDealerAceAdded(value => false);
                 setHandOver(value => false);
             }
         }
-    }, (dealerValue >= 17 || dealerAce === true) ? null : 1000);
+    }, (dealerValue >= 17 || dealerAceAdded) ? null : 1000);
 
     const checkWinner = () => {
         if (dealerValue > 21 && playerValue <= 21) {
@@ -206,29 +209,28 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
             if (player.length === 2) {
                 checkBlackJack();
             }
-            if ((dealerValue >= 17 && dealerValue <= 21) || (dealerAceAdded === true && dealerLength >= 2 && dealerTotal - 10 >= 17 && dealerTotal - 10 <= 21)) {
-                setHandOver(value => true);
-            }
+            // todo: change this to check per hand instead of for 1 hand
             if (playerValue > 21) {
+                setPlayerActive(value => false);
                 setHandOver(value => true);
                 setMessage(message => "Bust!");
             } else if (dealerValue > 21) {
-                if (dealerAceAdded && dealerTotal - 10 < 21) {
+                if (dealerAceAdded && dealerValue - 10 < 21) {
                     setDealerValue(value => value - 10);
                     setDealerAceAdded(value => false);
-                    dealerAce = false;
                 } else {
                     setHandOver(value => true);
+                    setBetActive(value => false);
                     setMessage(message => "Dealer Bust!");
                 }
             }
-            if (handOver === true) {
-                setHandActive(value => false);
+            // todo: check this per hand instead of whole game
+            if (!playerActive && handOver) {
                 //settle bets
                 checkWinner();
                 if (winner === dealer) {
                     setMessage(message => message + " Dealer Wins!");
-                    if (wallet === 0) {
+                    if (wallet === 0 || wallet < 5) {
                         setMessage(message => message + "Game Over. Please try again!");
                     }
                 } else if (winner === player) {
@@ -241,7 +243,7 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
                 setBetActive(value => false);
                 setBet(value => 0);
             }
-        }, [playerValue, dealerValue, dealerAceAdded, handOver, player, betActive]);
+        }, [playerValue, dealerValue, dealerAceAdded, playerActive, handOver, player, betActive]);
 
     return (
         <div className="gameBoard">
@@ -259,47 +261,41 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
                                 // debugger;
                             }}
                         />
-
-                        <button disabled={betActive || handActive} type="submit" onClick={(e) => {
+                        <button disabled={betActive || playerActive} type="submit" onClick={(e) => {
                             e.preventDefault();
                             if (betAmount >= minBet && betAmount <= wallet) {
+                                if (deck.length - count <= 15) {
+                                    shuffleDeck();
+                                }
                                 setWallet(value => value - betAmount);
                                 setBet(value => betAmount);
                                 setBetActive(value => true);
-                                resetHand();
                                 inputRef.current.reset();
+                                resetHand();
+                                console.log('starting hand!')
+                                startHand();
                             } else {
                                 alert("Please input a valid bet");
                                 inputRef.current.reset();
                             }
                         }}>Bet</button>
                     </form>
-                    <button disabled={handActive || !betActive} onClick={() => {
-                        if (deck.length - count <= 15) {
-                            shuffleDeck();
-                        }
-                        setDealing(value => true);
-                        setHandActive(value => true);
-                        resetHand();
-                        setBetActive(value => false);
-                        startHand();
-                    }}>Start Hand</button>
                 </div>
             </div>
             <div className="board-space">
                 <div className="dealerBoard">
                     <div className="dealer-value">Dealer: {dealerValue}{(dealerAceCount !== 0 && dealerValue + 10 <= 17) ? `(${dealerValue + 10})` : ""}</div>
-                    <DealerHand dealer={dealer} />
+                    <DealerHand dealer={dealer} playerActive={playerActive} />
                 </div>
                 <div className="playerBoard">
-
-                    <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
                     <div className="actions">
-                        <button disabled={playerStand || handOver || dealing || !handActive} className="hitButton" onClick={() => {
+                        <button disabled={!playerActive} className="hitButton" onClick={() => {
                             hit(player);
                         }}>Hit</button>
-                        <button disabled={playerStand || handOver || dealing || !handActive} className="standButton" onClick={() => {
+                        <button disabled={!playerActive} className="standButton" onClick={() => {
                             setPlayerStand(value => true);
+                            setPlayerActive(value => false);
+                            setDealerTurn(value => true);
                             if (playerAceCount !== 0) {
                                 if (playerValue + 10 <= 21) {
                                     setPlayerValue(value => value + 10);
@@ -307,6 +303,7 @@ const Gameboard = ({deckID, deck, setDeck, getDeck}) => {
                             }
                         }}>Stand</button>
                     </div>
+                    <div>You: {playerValue}{(playerAceCount !== 0 && playerValue + 10 <= 21) ? `(${playerValue + 10})` : ""}</div>
                     <Player player={player} />
                 </div>
             </div>
